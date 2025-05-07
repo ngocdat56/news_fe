@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  @apply bg-dark-50 text-dark-800;
+}
+
+/* Custom utility classes */
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+  
+  .article-content {
+    @apply prose prose-lg max-w-none prose-headings:text-dark-900 prose-headings:font-semibold prose-p:text-dark-800 prose-img:rounded-lg;
+  }
+  
+  /* Animation classes */
+  .fade-in {
+    @apply animate-[fadeIn_0.5s_ease-in-out];
+  }
+  
+  .slide-up {
+    @apply animate-[slideUp_0.5s_ease-out];
+  }
+  
+  /* Card styles */
+  .article-card {
+    @apply bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+  
+  .article-card-featured {
+    @apply bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-100 hover:bg-dark-200 text-dark-800 font-medium py-2 px-4 rounded transition-colors duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-500 hover:bg-accent-600 text-white font-medium py-2 px-4 rounded transition-colors duration-200;
+  }
+}
+
+/* Article content styling */
+.article-content p {
+  @apply mb-4 leading-relaxed;
+}
+
+.article-content h2 {
+  @apply text-2xl font-semibold mt-8 mb-4;
+}
+
+.article-content h3 {
+  @apply text-xl font-semibold mt-6 mb-3;
+}
+
+/* Keyframes for animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Swiper custom styles */
+.swiper-pagination-bullet {
+  @apply bg-primary-600 opacity-70;
+}
+
+.swiper-pagination-bullet-active {
+  @apply bg-primary-600 opacity-100;
+}
+
+/* Image loading effect */
+.image-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-loading::after {
+  content: "";
+  @apply absolute inset-0 -translate-x-full;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Category badge styles */
+.category-badge {
+  @apply inline-block px-2.5 py-1 text-xs font-medium rounded-full;
+}
+
+.category-badge.technology {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.category-badge.politics {
+  @apply bg-red-100 text-red-800;
+}
+
+.category-badge.health {
+  @apply bg-green-100 text-green-800;
+}
+
+.category-badge.sports {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.category-badge.science {
+  @apply bg-purple-100 text-purple-800;
+}
+
+.category-badge.culture {
+  @apply bg-pink-100 text-pink-800;
+}
+
+.category-badge.entertainment {
+  @apply bg-yellow-100 text-yellow-800;
+}

@@ -1,0 +1,33 @@
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+import HomePage from './pages/HomePage'
+import CategoryPage from './pages/CategoryPage'
+import ArticlePage from './pages/ArticlePage'
+import NotFoundPage from './pages/NotFoundPage'
+import Header from './components/layout/Header'
+import Footer from './components/layout/Footer'
+import ScrollToTop from './components/utils/ScrollToTop'
+
+function App() {
+  const location = useLocation()
+
+  return (
+    <>
+      <ScrollToTop />
+      <Header />
+      <main className="min-h-screen pt-16">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/category/:category" element={<CategoryPage />} />
+            <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+      <Footer />
+    </>
+  )
+}
+
+export default App
