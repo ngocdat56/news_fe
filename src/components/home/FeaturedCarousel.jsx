@@ -118,3 +118,5 @@ function FeaturedCarousel({ articles, isLoading, error }) {
     </div>
   )
 }
+
+export default FeaturedCarousel
