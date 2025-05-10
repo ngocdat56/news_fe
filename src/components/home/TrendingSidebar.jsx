@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
 import { categoryNames } from '../../services/supabase'
+import { generateArticleUrl } from '../../utils/urlUtils'
 
 function TrendingSidebar({ articles, isLoading, error }) {
   if (error) {
@@ -65,7 +66,7 @@ function TrendingSidebar({ articles, isLoading, error }) {
                 </span>
                 <h3 className="font-semibold line-clamp-2 mb-1">
                   <Link 
-                    to={`/article/${article.id}`}
+                    to={generateArticleUrl(article)}
                     className="hover:text-primary-600 transition-colors"
                   >
                     {article.title}

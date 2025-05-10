@@ -9,6 +9,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
 import { categoryNames } from '../../services/supabase'
+import { generateArticleUrl } from '../../utils/urlUtils'
 
 function FeaturedCarousel({ articles, isLoading, error }) {
   const swiperRef = useRef(null)
@@ -85,7 +86,7 @@ function FeaturedCarousel({ articles, isLoading, error }) {
                     {categoryNames[article.type_article]}
                   </span>
                   <h2 className="text-2xl md:text-4xl font-bold mb-4">
-                    <Link to={`/article/${article.id}`} className="hover:underline">
+                    <Link to={generateArticleUrl(article)} className="hover:underline">
                       {article.title}
                     </Link>
                   </h2>
@@ -103,7 +104,7 @@ function FeaturedCarousel({ articles, isLoading, error }) {
                     </span>
                   </div>
                   <Link 
-                    to={`/article/${article.id}`}
+                    to={generateArticleUrl(article)}
                     className="inline-block mt-6 px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-md transition-colors"
                   >
                     Read More
@@ -117,5 +118,3 @@ function FeaturedCarousel({ articles, isLoading, error }) {
     </div>
   )
 }
-
-export default FeaturedCarousel

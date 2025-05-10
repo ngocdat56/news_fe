@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
+import { generateArticleUrl } from '../../utils/urlUtils'
 
 function RelatedArticles({ articles, isLoading, error }) {
   if (error) {
@@ -55,7 +56,7 @@ function RelatedArticles({ articles, isLoading, error }) {
     >
       {articles.map((article) => (
         <motion.div key={article.id} variants={item} className="article-card flex flex-col sm:flex-row gap-4">
-          <Link to={`/article/${article.id}`} className="block sm:w-1/3 aspect-video sm:aspect-square overflow-hidden rounded-lg">
+          <Link to={generateArticleUrl(article)} className="block sm:w-1/3 aspect-video sm:aspect-square overflow-hidden rounded-lg">
             <img 
               src={article.link_image} 
               alt={article.title}
@@ -65,7 +66,7 @@ function RelatedArticles({ articles, isLoading, error }) {
           <div className="sm:w-2/3 p-4 sm:p-0">
             <h3 className="text-lg font-semibold mb-2 line-clamp-2">
               <Link 
-                to={`/article/${article.id}`}
+                to={generateArticleUrl(article)}
                 className="hover:text-primary-600 transition-colors"
               >
                 {article.title}

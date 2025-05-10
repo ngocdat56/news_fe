@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { HiClock, HiTag, HiArrowRight } from 'react-icons/hi'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
 import { categoryNames } from '../../services/supabase'
+import { generateArticleUrl } from '../../utils/urlUtils'
 
 function LatestNews({ articles, isLoading, error }) {
   const [visibleCount, setVisibleCount] = useState(6)
@@ -55,7 +56,7 @@ function LatestNews({ articles, isLoading, error }) {
           >
             {articles.slice(0, visibleCount).map((article) => (
               <motion.div key={article.id} variants={item} className="article-card">
-                <Link to={`/article/${article.id}`} className="block overflow-hidden relative aspect-video">
+                <Link to={generateArticleUrl(article)} className="block overflow-hidden relative aspect-video">
                   <img 
                     src={article.link_image} 
                     alt={article.title}
@@ -69,7 +70,7 @@ function LatestNews({ articles, isLoading, error }) {
                 </Link>
                 <div className="p-5">
                   <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-                    <Link to={`/article/${article.id}`} className="hover:text-primary-600 transition-colors">
+                    <Link to={generateArticleUrl(article)} className="hover:text-primary-600 transition-colors">
                       {article.title}
                     </Link>
                   </h3>

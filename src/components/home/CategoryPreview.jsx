@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { HiArrowRight } from 'react-icons/hi'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
 import { categoryNames } from '../../services/supabase'
+import { generateArticleUrl } from '../../utils/urlUtils'
 
 function CategoryPreview({ category, articles, isLoading, error }) {
   if (error) {
@@ -70,7 +71,7 @@ function CategoryPreview({ category, articles, isLoading, error }) {
               className="flex flex-col sm:flex-row gap-4 pb-4 border-b border-dark-100 last:border-0 last:pb-0"
             >
               <Link 
-                to={`/article/${article.id}`} 
+                to={generateArticleUrl(article)} 
                 className="block sm:w-1/3 aspect-video sm:aspect-square overflow-hidden rounded-lg"
               >
                 <img 
@@ -82,7 +83,7 @@ function CategoryPreview({ category, articles, isLoading, error }) {
               <div className="sm:w-2/3">
                 <h3 className="text-lg font-semibold mb-2 line-clamp-2">
                   <Link 
-                    to={`/article/${article.id}`}
+                    to={generateArticleUrl(article)}
                     className="hover:text-primary-600 transition-colors"
                   >
                     {article.title}
