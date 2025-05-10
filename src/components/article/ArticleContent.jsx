@@ -4,11 +4,12 @@ import { motion } from "framer-motion"
 import { HiClock, HiTag, HiShare } from "react-icons/hi"
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa"
 import { categoryNames, incrementArticleViews } from "../../services/supabase"
+import { generateArticleUrl } from "../../utils/urlUtils"
 
 function ArticleContent({ article }) {
     if (!article) return null
 
-    const shareUrl = window.location.href
+    const shareUrl = window.location.origin + generateArticleUrl(article)
     const articleDate = new Date(article.date)
 
     useEffect(() => {
