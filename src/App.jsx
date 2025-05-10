@@ -3,6 +3,10 @@ import { AnimatePresence } from 'framer-motion'
 import HomePage from './pages/HomePage'
 import CategoryPage from './pages/CategoryPage'
 import ArticlePage from './pages/ArticlePage'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
@@ -21,6 +25,10 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/article/:category/:slug" element={<ArticlePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
