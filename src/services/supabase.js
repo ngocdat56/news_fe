@@ -122,14 +122,13 @@ export async function getCategoryCounts() {
 }
 
 export async function searchArticles(query) {
-    // Basic search implementation
-    // In a production app, you might use Supabase's full-text search or a dedicated search service
+    if (!query) return []
+    
     const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .or(
-            `title.ilike.%${query}%,description.ilike.%${query}%,content.ilike.%${query}%`
-        )
+        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+        .order("date", { ascending: false })
         .limit(10)
 
     if (error) {

@@ -15,6 +15,7 @@ function Header() {
     // Close menu when route changes
     useEffect(() => {
         setIsMenuOpen(false)
+        setIsSearchOpen(false)
     }, [location.pathname])
 
     // Handle scroll event to change header style
