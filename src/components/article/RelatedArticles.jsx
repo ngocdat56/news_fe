@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
+import { categoryNames } from '../../services/supabase'
 import { generateArticleUrl } from '../../utils/urlUtils'
 
 function RelatedArticles({ articles, isLoading, error }) {
@@ -48,37 +49,35 @@ function RelatedArticles({ articles, isLoading, error }) {
 
   return (
     <motion.div 
-      className="grid grid-cols-1 gap-6"
+      className="space-y-5"
       variants={container}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true }}
     >
       {articles.map((article) => (
-        <motion.div key={article.id} variants={item} className="article-card flex flex-col sm:flex-row gap-4">
-          <Link to={generateArticleUrl(article)} className="block sm:w-1/3 aspect-video sm:aspect-square overflow-hidden rounded-lg">
-            <img 
-              src={article.link_image} 
-              alt={article.title}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-            />
-          </Link>
-          <div className="sm:w-2/3 p-4 sm:p-0">
-            <h3 className="text-lg font-semibold mb-2 line-clamp-2">
-              <Link 
-                to={generateArticleUrl(article)}
-                className="hover:text-primary-600 transition-colors"
-              >
-                {article.title}
-              </Link>
-            </h3>
-            <p className="text-dark-600 text-sm mb-2 line-clamp-2">
-              {article.description}
-            </p>
-            <span className="text-dark-500 text-xs">
-              {format(new Date(article.date), 'MMM d, yyyy')}
-            </span>
-          </div>
+        <motion.div 
+          key={article.id} 
+          variants={item}
+          className="pb-5 border-b border-dark-100 last:border-0 last:pb-0"
+        >
+          <span className={`category-badge ${article.type_article} mb-2 inline-block`}>
+            {categoryNames[article.type_article]}
+          </span>
+          <h3 className="font-semibold mb-2">
+            <Link 
+              to={generateArticleUrl(article)}
+              className="hover:text-primary-600 transition-colors"
+            >
+              {article.title}
+            </Link>
+          </h3>
+          <p className="text-dark-600 text-sm mb-2">
+            {article.description}
+          </p>
+          <span className="text-dark-500 text-xs">
+            {format(new Date(article.date), 'MMM d, yyyy')}
+          </span>
         </motion.div>
       ))}
     </motion.div>
