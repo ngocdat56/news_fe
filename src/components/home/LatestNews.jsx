@@ -98,3 +98,5 @@ function LatestNews({ articles, isLoading, error }) {
     </div>
   )
 }
+
+export default LatestNews
