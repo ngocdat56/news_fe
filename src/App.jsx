@@ -20,7 +20,7 @@ function App() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />
             <Route path="/category/:category" element={<CategoryPage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="/article/:category/:slug" element={<ArticlePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
