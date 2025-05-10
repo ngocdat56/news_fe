@@ -68,20 +68,13 @@ function CategoryPreview({ category, articles, isLoading, error }) {
             <motion.div 
               key={article.id} 
               variants={item}
-              className="flex flex-col sm:flex-row gap-4 pb-4 border-b border-dark-100 last:border-0 last:pb-0"
+              className="pb-4 border-b border-dark-100 last:border-0 last:pb-0"
             >
-              <Link 
-                to={generateArticleUrl(article)} 
-                className="block sm:w-1/3 aspect-video sm:aspect-square overflow-hidden rounded-lg"
-              >
-                <img 
-                  src={article.link_image} 
-                  alt={article.title}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </Link>
-              <div className="sm:w-2/3">
-                <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+              <div>
+                <span className={`category-badge ${article.type_article} mb-2 inline-block`}>
+                  {categoryNames[article.type_article]}
+                </span>
+                <h3 className="text-lg font-semibold mb-2">
                   <Link 
                     to={generateArticleUrl(article)}
                     className="hover:text-primary-600 transition-colors"

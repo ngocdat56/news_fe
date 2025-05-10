@@ -36,22 +36,11 @@ function ArticleContent({ article }) {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-xl shadow-sm overflow-hidden"
         >
-            {/* Featured Image */}
-            <div className="relative aspect-video">
-                <img
-                    src={article.link_image}
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4">
-                    <span className={`category-badge ${article.type_article}`}>
-                        {categoryNames[article.type_article]}
-                    </span>
-                </div>
-            </div>
-
-            {/* Article Header */}
             <div className="p-6 md:p-10">
+                <span className={`category-badge ${article.type_article} mb-4 inline-block`}>
+                    {categoryNames[article.type_article]}
+                </span>
+                
                 <h1 className="text-3xl md:text-4xl font-bold text-dark-900 mb-4">
                     {article.title}
                 </h1>
@@ -65,25 +54,23 @@ function ArticleContent({ article }) {
                         <HiTag className="mr-1" />
                         {categoryNames[article.type_article]}
                     </span>
-                    {/* Display Views */}
                     <span className="flex items-center">
                         <HiClock className="mr-1" />
                         Views: {article.total_view}
                     </span>
                 </div>
 
-                {/* Description/Summary */}
-                <p className="text-lg text-dark-700 mb-8 italic border-l-4 border-primary-500 pl-4 py-2">
-                    {article.description}
-                </p>
+                <div className="prose prose-lg max-w-none">
+                    <p className="text-lg text-dark-700 mb-8 italic border-l-4 border-primary-500 pl-4 py-2">
+                        {article.description}
+                    </p>
 
-                {/* Article Content */}
-                <div
-                    className="article-content mb-10"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
-                />
+                    <div
+                        className="article-content mb-10"
+                        dangerouslySetInnerHTML={{ __html: article.content }}
+                    />
+                </div>
 
-                {/* Share Section */}
                 <div className="border-t border-dark-100 pt-6 mt-8">
                     <h4 className="text-lg font-semibold mb-4 flex items-center">
                         <HiShare className="mr-2" />

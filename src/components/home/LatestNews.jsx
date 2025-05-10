@@ -56,20 +56,11 @@ function LatestNews({ articles, isLoading, error }) {
           >
             {articles.slice(0, visibleCount).map((article) => (
               <motion.div key={article.id} variants={item} className="article-card">
-                <Link to={generateArticleUrl(article)} className="block overflow-hidden relative aspect-video">
-                  <img 
-                    src={article.link_image} 
-                    alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                  <div className="absolute top-2 left-2">
-                    <span className={`category-badge ${article.type_article}`}>
-                      {categoryNames[article.type_article]}
-                    </span>
-                  </div>
-                </Link>
                 <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                  <span className={`category-badge ${article.type_article} mb-3 inline-block`}>
+                    {categoryNames[article.type_article]}
+                  </span>
+                  <h3 className="text-xl font-semibold mb-2">
                     <Link to={generateArticleUrl(article)} className="hover:text-primary-600 transition-colors">
                       {article.title}
                     </Link>
@@ -107,5 +98,3 @@ function LatestNews({ articles, isLoading, error }) {
     </div>
   )
 }
-
-export default LatestNews
