@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { HiArrowLeft } from 'react-icons/hi'
@@ -7,16 +7,33 @@ import { categoryNames } from '../services/supabase'
 import ArticleContent from '../components/article/ArticleContent'
 import RelatedArticles from '../components/article/RelatedArticles'
 import ArticleCardSkeleton from '../components/shared/ArticleCardSkeleton'
+import { parseArticleUrl, generateArticleUrl } from '../utils/urlUtils'
 
 function ArticlePage() {
-  const { id } = useParams()
+  const { category, slug } = useParams()
+  const navigate = useNavigate()
+  
+  // Extract article ID from slug
+  const articleInfo = parseArticleUrl(`/article/${category}/${slug}`)
+  const id = articleInfo?.id
   
   // Fetch article
   const { 
     data: article, 
     isLoading, 
     error 
-  } = useArticle(parseInt(id))
+  } = useArticle(id)
+  
+  // Redirect if URL doesn't match the canonical form
+  useEffect(() => {
+    if (article) {
+      const canonicalUrl = generateArticleUrl(article)
+      const currentUrl = `/article/${category}/${slug}`
+      if (canonicalUrl !== currentUrl) {
+        navigate(canonicalUrl, { replace: true })
+      }
+    }
+  }, [article, category, slug, navigate])
   
   // Fetch related articles
   const {
@@ -24,7 +41,7 @@ function ArticlePage() {
     isLoading: isRelatedLoading,
     error: relatedError
   } = useRelatedArticles({
-    id: parseInt(id),
+    id: id,
     category: article?.type_article
   })
 
