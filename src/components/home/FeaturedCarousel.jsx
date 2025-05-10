@@ -14,7 +14,6 @@ import { generateArticleUrl } from '../../utils/urlUtils'
 function FeaturedCarousel({ articles, isLoading, error }) {
   const swiperRef = useRef(null)
 
-  // Pause autoplay on hover
   useEffect(() => {
     const swiperInstance = swiperRef.current?.swiper
     if (!swiperInstance) return
@@ -49,7 +48,7 @@ function FeaturedCarousel({ articles, isLoading, error }) {
   return (
     <div className="featured-carousel relative">
       {isLoading ? (
-        <div className="h-[500px] md:h-[600px]">
+        <div className="h-[300px]">
           <ArticleCardSkeleton height="full" />
         </div>
       ) : (
@@ -65,22 +64,16 @@ function FeaturedCarousel({ articles, isLoading, error }) {
           }}
           loop={true}
           modules={[Pagination, Autoplay]}
-          className="h-[500px] md:h-[600px] rounded-xl overflow-hidden"
+          className="h-[300px] rounded-xl overflow-hidden bg-primary-900"
         >
           {articles.map((article) => (
             <SwiperSlide key={article.id} className="relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
-              <img 
-                src={article.link_image} 
-                alt={article.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="relative z-20 h-full flex flex-col justify-end p-6 md:p-10">
+              <div className="h-full flex flex-col justify-center p-6 md:p-10">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="text-white max-w-3xl"
+                  className="text-white max-w-3xl mx-auto text-center"
                 >
                   <span className="inline-block px-3 py-1 rounded-full bg-accent-500 text-white text-sm font-medium mb-4">
                     {categoryNames[article.type_article]}
@@ -90,10 +83,10 @@ function FeaturedCarousel({ articles, isLoading, error }) {
                       {article.title}
                     </Link>
                   </h2>
-                  <p className="text-white/80 text-base md:text-lg mb-4 line-clamp-2 md:line-clamp-3">
+                  <p className="text-white/80 text-base md:text-lg mb-4 line-clamp-2">
                     {article.description}
                   </p>
-                  <div className="flex items-center text-white/70 text-sm space-x-4">
+                  <div className="flex items-center justify-center text-white/70 text-sm space-x-4 mb-6">
                     <span className="flex items-center">
                       <HiClock className="mr-1" />
                       {format(new Date(article.date), 'MMM d, yyyy')}
@@ -105,7 +98,7 @@ function FeaturedCarousel({ articles, isLoading, error }) {
                   </div>
                   <Link 
                     to={generateArticleUrl(article)}
-                    className="inline-block mt-6 px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-md transition-colors"
+                    className="inline-block px-6 py-2 bg-white text-primary-900 font-medium rounded-md hover:bg-white/90 transition-colors"
                   >
                     Read More
                   </Link>
