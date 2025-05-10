@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { HiArrowLeft } from 'react-icons/hi'
@@ -55,7 +56,7 @@ function ArticlePage() {
     )
   }
 
-  if (error) {
+  if (error || !article) {
     return (
       <div className="container-custom py-12">
         <div className="p-8 text-center bg-red-50 rounded-lg max-w-2xl mx-auto">
@@ -71,8 +72,6 @@ function ArticlePage() {
       </div>
     )
   }
-
-  if (!article) return null
 
   const categoryLabel = categoryNames[article.type_article] || 'Category'
 

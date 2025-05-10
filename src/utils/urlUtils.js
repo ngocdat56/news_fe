@@ -30,6 +30,7 @@ export function generateArticleUrl(article) {
 }
 
 export function parseArticleUrl(url) {
+  // Updated regex to match the new URL format with slugs
   const matches = url.match(/\/article\/([^\/]+)\/(.+)-(\d+)$/);
   if (!matches) return null;
   
