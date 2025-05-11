@@ -19,18 +19,14 @@ export async function getArticles({
 } = {}) {
     let query = supabase
         .from("articles")
-        .select("*")
+        .select("*", { count: "exact" })
         .order(sortBy, { ascending: direction === "asc" })
 
     if (category) {
         query = query.eq("type_article", category)
     }
 
-    // First get the total count
-    const { count } = await query.count()
-
-    // Then get the paginated data
-    const { data, error } = await query
+    const { data, count, error } = await query
         .range(offset, offset + limit - 1)
 
     if (error) {
