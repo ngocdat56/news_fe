@@ -1,15 +1,4 @@
-import { createClient } from "@supabase/supabase-js"
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Missing Supabase credentials!")
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-// Article related functions
+// articleService.js
 export async function getArticles({
     limit = 10,
     offset = 0,
@@ -17,125 +6,174 @@ export async function getArticles({
     sortBy = "date",
     direction = "desc",
 } = {}) {
-    let query = supabase
-        .from("articles")
-        .select("*", { count: "exact" })
-        .order(sortBy, { ascending: direction === "asc" })
+    try {
+        const url = new URL('http://164.90.136.110:8002/articles'); // Endpoint FastAPI
+        const params = new URLSearchParams({
+            limit: limit,
+            offset: offset,
+            category: category || '',
+            sortBy: sortBy,
+            direction: direction
+        });
 
-    if (category) {
-        query = query.eq("type_article", category)
-    }
+        url.search = params.toString();
 
-    const { data, count, error } = await query
-        .range(offset, offset + limit - 1)
+        const response = await fetch(url);
+        const data = await response.json();
 
-    if (error) {
-        console.error("Error fetching articles:", error)
-        throw new Error("Failed to fetch articles")
-    }
-
-    return {
-        data,
-        hasNextPage: offset + limit < count,
-        total: count
+        if (response.ok) {
+            return {
+                data: data.data, // Lấy dữ liệu bài viết từ response
+                hasNextPage: offset + limit < data.total,
+                total: data.total
+            };
+        } else {
+            console.error('Error fetching articles:', data);
+            throw new Error("Failed to fetch articles");
+        }
+    } catch (error) {
+        console.error("Error fetching articles:", error);
+        throw new Error("Failed to fetch articles");
     }
 }
 
 export async function getArticleById(id) {
-    const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("id", id)
-        .single()
+    try {
+        const response = await fetch(`http://164.90.136.110:8002/articles/${id}`);
+        const data = await response.json();
 
-    if (error) {
-        console.error("Error fetching article:", error)
-        throw new Error("Failed to fetch article")
+        if (response.ok) {
+            return data.data; // Lấy dữ liệu bài viết
+        } else {
+            console.error("Error fetching article:", data);
+            throw new Error("Failed to fetch article");
+        }
+    } catch (error) {
+        console.error("Error fetching article:", error);
+        throw new Error("Failed to fetch article");
     }
-
-    return data
 }
 
 export async function getRelatedArticles({ id, category, limit = 3 }) {
-    const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("type_article", category)
-        .neq("id", id)
-        .limit(limit)
+    try {
+        const url = new URL('http://164.90.136.110:8002/articles/related'); // Endpoint FastAPI
+        const params = new URLSearchParams({
+            id: id,
+            category: category,
+            limit: limit
+        });
 
-    if (error) {
-        console.error("Error fetching related articles:", error)
-        throw new Error("Failed to fetch related articles")
+        url.search = params.toString();
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.data; // Lấy dữ liệu bài viết liên quan
+        } else {
+            console.error("Error fetching related articles:", data);
+            throw new Error("Failed to fetch related articles");
+        }
+    } catch (error) {
+        console.error("Error fetching related articles:", error);
+        throw new Error("Failed to fetch related articles");
     }
-
-    return data
 }
 
 export async function getFeaturedArticles(limit = 5) {
-    const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .order("date", { ascending: false })
-        .limit(limit)
+    try {
+        const response = await fetch(`http://164.90.136.110:8002/articles/featured?limit=${limit}`);
+        const data = await response.json();
 
-    if (error) {
-        console.error("Error fetching featured articles:", error)
-        throw new Error("Failed to fetch featured articles")
+        if (response.ok) {
+            return data.data; // Lấy dữ liệu bài viết nổi bật
+        } else {
+            console.error("Error fetching featured articles:", data);
+            throw new Error("Failed to fetch featured articles");
+        }
+    } catch (error) {
+        console.error("Error fetching featured articles:", error);
+        throw new Error("Failed to fetch featured articles");
     }
-
-    return data
 }
 
 export async function getTrendingArticles(limit = 4) {
-    const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .order("total_view", { ascending: false })
-        .limit(limit)
+    try {
+        const response = await fetch(`http://164.90.136.110:8002/articles/trending?limit=${limit}`);
+        const data = await response.json();
 
-    if (error) {
-        console.error("Error fetching trending articles:", error)
-        throw new Error("Failed to fetch trending articles")
+        if (response.ok) {
+            return data.data; // Lấy dữ liệu bài viết xu hướng
+        } else {
+            console.error("Error fetching trending articles:", data);
+            throw new Error("Failed to fetch trending articles");
+        }
+    } catch (error) {
+        console.error("Error fetching trending articles:", error);
+        throw new Error("Failed to fetch trending articles");
     }
-
-    return data
 }
 
 export async function getCategoryCounts() {
-    const { data, error } = await supabase
-        .from("articles")
-        .select("type_article")
+    try {
+        const response = await fetch('http://164.90.136.110:8002/articles/categories');
+        const data = await response.json();
 
-    if (error) {
-        console.error("Error fetching category counts:", error)
-        throw new Error("Failed to fetch category counts")
+        if (response.ok) {
+            const counts = data.reduce((acc, item) => {
+                acc[item.type_article] = (acc[item.type_article] || 0) + 1;
+                return acc;
+            }, {});
+
+            return Object.entries(counts).map(([name, count]) => ({ name, count }));
+        } else {
+            console.error("Error fetching category counts:", data);
+            throw new Error("Failed to fetch category counts");
+        }
+    } catch (error) {
+        console.error("Error fetching category counts:", error);
+        throw new Error("Failed to fetch category counts");
     }
-
-    const counts = data.reduce((acc, item) => {
-        acc[item.type_article] = (acc[item.type_article] || 0) + 1
-        return acc
-    }, {})
-
-    return Object.entries(counts).map(([name, count]) => ({ name, count }))
 }
 
 export async function searchArticles(query) {
-    if (!query) return []
-    
-    const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-        .order("date", { ascending: false })
-        .limit(10)
+    if (!query) return [];
 
-    if (error) {
-        console.error("Error searching articles:", error)
-        throw new Error("Failed to search articles")
+    try {
+        const response = await fetch(`http://164.90.136.110:8002/articles/search?query=${query}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.data; // Lấy dữ liệu bài viết tìm kiếm
+        } else {
+            console.error("Error searching articles:", data);
+            throw new Error("Failed to search articles");
+        }
+    } catch (error) {
+        console.error("Error searching articles:", error);
+        throw new Error("Failed to search articles");
     }
+}
 
-    return data
+export async function incrementArticleViews(id) {
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    try {
+        const response = await fetch(`http://164.90.136.110:8002/articles/${id}/increment-views`, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return { success: true, total_view: data.total_view, daily_view: data.daily_view };
+        } else {
+            console.error("Error updating view counts:", data);
+            throw new Error("Failed to increment view counts");
+        }
+    } catch (error) {
+        console.error("Error incrementing article views:", error);
+        throw new Error("Failed to increment views");
+    }
 }
 
 export const categoryNames = {
@@ -146,46 +184,4 @@ export const categoryNames = {
     science: "Science",
     culture: "Culture",
     entertainment: "Entertainment",
-}
-
-export async function incrementArticleViews(id) {
-    const currentDate = new Date().toISOString().split("T")[0]
-
-    try {
-        const { data: article, error: selectError } = await supabase
-            .from("articles")
-            .select("total_view, daily_view, created_at")
-            .eq("id", id)
-            .single()
-
-        if (selectError) {
-            console.error("Error fetching current view counts:", selectError)
-            throw new Error("Failed to fetch current view counts")
-        }
-
-        const newTotal = (article.total_view || 0) + 1
-        const articleDate = article.created_at
-            ? article.created_at.split("T")[0]
-            : currentDate
-        const newDaily =
-            articleDate === currentDate ? (article.daily_view || 0) + 1 : 1
-
-        const { error: updateError } = await supabase
-            .from("articles")
-            .update({
-                total_view: newTotal,
-                daily_view: newDaily,
-            })
-            .eq("id", id)
-
-        if (updateError) {
-            console.error("Error updating view counts:", updateError)
-            throw new Error("Failed to increment view counts")
-        }
-
-        return { success: true, total_view: newTotal, daily_view: newDaily }
-    } catch (error) {
-        console.error("Error incrementing article views:", error)
-        throw new Error("Failed to increment views")
-    }
-}
+};
