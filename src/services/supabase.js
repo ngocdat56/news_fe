@@ -1,5 +1,29 @@
-const API_BASE_URL = "http://164.90.136.110:8002";
+import { createClient } from "@supabase/supabase-js";
 
+// Note: Since we're using FastAPI, not Supabase, we'll use fetch instead
+const API_URL = process.env.REACT_APP_API_URL || "http://164.90.136.110:8000";
+
+if (!API_URL) {
+    console.error("Missing API URL!");
+}
+
+// Helper function to make API requests
+async function fetchAPI(endpoint, options = {}) {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.detail || "API request failed");
+    }
+    return data;
+}
+
+// Article related functions
 export async function getArticles({
     limit = 10,
     offset = 0,
@@ -7,138 +31,50 @@ export async function getArticles({
     sortBy = "date",
     direction = "desc",
 } = {}) {
-    try {
-        const url = new URL(`${API_BASE_URL}/articles`);
-        const params = {
-            limit,
-            offset,
-            sortBy,
-            direction
-        };
-        
-        if (category) params.category = category;
-
-        url.search = new URLSearchParams(params).toString();
-
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        
-        return {
-            data: data.data,
-            hasNextPage: data.hasNextPage,
-            total: data.total
-        };
-    } catch (error) {
-        console.error("Error fetching articles:", error);
-        throw error;
+    const params = new URLSearchParams({
+        limit,
+        offset,
+        sortBy,
+        direction,
+    });
+    if (category) {
+        params.append("category", category);
     }
+    const data = await fetchAPI(`/articles/?${params}`);
+    return {
+        data: data.data,
+        hasNextPage: data.hasNextPage,
+        total: data.total,
+    };
 }
 
 export async function getArticleById(id) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/${id}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching article:", error);
-        throw error;
-    }
+    return await fetchAPI(`/articles/${id}`);
 }
 
 export async function getRelatedArticles({ id, category, limit = 3 }) {
-    try {
-        const url = new URL(`${API_BASE_URL}/articles/related`);
-        url.search = new URLSearchParams({ id, category, limit }).toString();
-
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching related articles:", error);
-        throw error;
-    }
+    const params = new URLSearchParams({ id, category, limit });
+    return await fetchAPI(`/articles/related?${params}`);
 }
 
 export async function getFeaturedArticles(limit = 5) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/featured?limit=${limit}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching featured articles:", error);
-        throw error;
-    }
+    const params = new URLSearchParams({ limit });
+    return await fetchAPI(`/articles/featured?${params}`);
 }
 
 export async function getTrendingArticles(limit = 4) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/trending?limit=${limit}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching trending articles:", error);
-        throw error;
-    }
+    const params = new URLSearchParams({ limit });
+    return await fetchAPI(`/articles/trending?${params}`);
 }
 
 export async function getCategoryCounts() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/categories`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching category counts:", error);
-        throw error;
-    }
+    return await fetchAPI("/articles/categories");
 }
 
 export async function searchArticles(query) {
     if (!query) return [];
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/search?query=${encodeURIComponent(query)}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error("Error searching articles:", error);
-        throw error;
-    }
-}
-
-export async function incrementArticleViews(id) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/articles/${id}/increment-views`, {
-            method: 'POST'
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error incrementing article views:", error);
-        throw error;
-    }
+    const params = new URLSearchParams({ query });
+    return await fetchAPI(`/articles/search?${params}`);
 }
 
 export const categoryNames = {
@@ -150,3 +86,9 @@ export const categoryNames = {
     culture: "Culture",
     entertainment: "Entertainment",
 };
+
+export async function incrementArticleViews(id) {
+    return await fetchAPI(`/articles/${id}/increment-views`, {
+        method: "POST",
+    });
+}
