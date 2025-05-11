@@ -10,6 +10,7 @@ import CategoryPreview from "../components/home/CategoryPreview"
 import TrendingSidebar from "../components/home/TrendingSidebar"
 
 function HomePage() {
+    const [visibleCount, setVisibleCount] = useState(6)
     const [selectedCategory, setSelectedCategory] = useState("technology")
 
     // Query for featured articles
@@ -19,15 +20,25 @@ function HomePage() {
         error: featuredError,
     } = useFeaturedArticles()
 
-    // Query for latest articles
+    // Query for latest articles with pagination
     const {
         data: latestArticles,
         isLoading: isLatestLoading,
         error: latestError,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage,
     } = useQuery(
-        "latestArticles",
-        () => getArticles({ limit: 12, sortBy: "date", direction: "desc" }),
-        { staleTime: 5 * 60 * 1000 }
+        ["latestArticles", visibleCount],
+        () => getArticles({ 
+            limit: visibleCount, 
+            sortBy: "date", 
+            direction: "desc" 
+        }),
+        { 
+            staleTime: 5 * 60 * 1000,
+            keepPreviousData: true,
+        }
     )
 
     // Query for trending articles
@@ -47,6 +58,10 @@ function HomePage() {
         () => getArticles({ category: selectedCategory, limit: 3 }),
         { staleTime: 5 * 60 * 1000 }
     )
+
+    const loadMore = () => {
+        setVisibleCount(prev => prev + 6)
+    }
 
     // Additional categories to preview
     const additionalCategories = ["politics", "health", "sports"]
@@ -97,6 +112,9 @@ function HomePage() {
                             articles={latestArticles || []}
                             isLoading={isLatestLoading}
                             error={latestError}
+                            onLoadMore={loadMore}
+                            hasMore={hasNextPage}
+                            isLoadingMore={isFetchingNextPage}
                         />
                     </section>
 

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { motion } from 'framer-motion'
@@ -7,13 +6,7 @@ import ArticleCardSkeleton from '../shared/ArticleCardSkeleton'
 import { categoryNames } from '../../services/supabase'
 import { generateArticleUrl } from '../../utils/urlUtils'
 
-function LatestNews({ articles, isLoading, error }) {
-  const [visibleCount, setVisibleCount] = useState(6)
-  
-  const loadMore = () => {
-    setVisibleCount(prevCount => prevCount + 6)
-  }
-
+function LatestNews({ articles, isLoading, error, onLoadMore, hasMore, isLoadingMore }) {
   if (error) {
     return (
       <div className="p-8 text-center bg-red-50 rounded-lg">
@@ -54,7 +47,7 @@ function LatestNews({ articles, isLoading, error }) {
             whileInView="show"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {articles.slice(0, visibleCount).map((article) => (
+            {articles.map((article) => (
               <motion.div key={article.id} variants={item} className="article-card">
                 <div className="p-5">
                   <span className={`category-badge ${article.type_article} mb-3 inline-block`}>
@@ -83,13 +76,18 @@ function LatestNews({ articles, isLoading, error }) {
             ))}
           </motion.div>
           
-          {visibleCount < articles.length && (
+          {hasMore && (
             <div className="text-center mt-10">
               <button 
-                onClick={loadMore}
-                className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-md transition-colors"
+                onClick={onLoadMore}
+                disabled={isLoadingMore}
+                className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-md transition-colors disabled:bg-primary-400"
               >
-                Load More <HiArrowRight className="ml-2" />
+                {isLoadingMore ? 'Loading...' : (
+                  <>
+                    Load More <HiArrowRight className="ml-2" />
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -98,5 +96,3 @@ function LatestNews({ articles, isLoading, error }) {
     </div>
   )
 }
-
-export default LatestNews

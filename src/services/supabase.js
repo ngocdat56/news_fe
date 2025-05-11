@@ -21,20 +21,28 @@ export async function getArticles({
         .from("articles")
         .select("*")
         .order(sortBy, { ascending: direction === "asc" })
-        .range(offset, offset + limit - 1)
 
     if (category) {
         query = query.eq("type_article", category)
     }
 
+    // First get the total count
+    const { count } = await query.count()
+
+    // Then get the paginated data
     const { data, error } = await query
+        .range(offset, offset + limit - 1)
 
     if (error) {
         console.error("Error fetching articles:", error)
         throw new Error("Failed to fetch articles")
     }
 
-    return data
+    return {
+        data,
+        hasNextPage: offset + limit < count,
+        total: count
+    }
 }
 
 export async function getArticleById(id) {
@@ -69,8 +77,6 @@ export async function getRelatedArticles({ id, category, limit = 3 }) {
 }
 
 export async function getFeaturedArticles(limit = 5) {
-    // For demo purposes, we'll just get the latest articles
-    // In a real app, you might have a featured field or algorithm
     const { data, error } = await supabase
         .from("articles")
         .select("*")
@@ -86,12 +92,10 @@ export async function getFeaturedArticles(limit = 5) {
 }
 
 export async function getTrendingArticles(limit = 4) {
-    // For demo purposes, just getting some articles
-    // In a real app, this might be based on view counts, shares, etc.
     const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("total_view", { ascending: false })
         .limit(limit)
 
     if (error) {
@@ -112,7 +116,6 @@ export async function getCategoryCounts() {
         throw new Error("Failed to fetch category counts")
     }
 
-    // Count occurrences of each category
     const counts = data.reduce((acc, item) => {
         acc[item.type_article] = (acc[item.type_article] || 0) + 1
         return acc
@@ -150,10 +153,9 @@ export const categoryNames = {
 }
 
 export async function incrementArticleViews(id) {
-    const currentDate = new Date().toISOString().split("T")[0] // YYYY-MM-DD
+    const currentDate = new Date().toISOString().split("T")[0]
 
     try {
-        // Fetch current view counts and created_at date
         const { data: article, error: selectError } = await supabase
             .from("articles")
             .select("total_view, daily_view, created_at")
@@ -172,7 +174,6 @@ export async function incrementArticleViews(id) {
         const newDaily =
             articleDate === currentDate ? (article.daily_view || 0) + 1 : 1
 
-        // Update the article record with new view counts
         const { error: updateError } = await supabase
             .from("articles")
             .update({
@@ -186,7 +187,6 @@ export async function incrementArticleViews(id) {
             throw new Error("Failed to increment view counts")
         }
 
-        // Return a success message or status if needed
         return { success: true, total_view: newTotal, daily_view: newDaily }
     } catch (error) {
         console.error("Error incrementing article views:", error)
