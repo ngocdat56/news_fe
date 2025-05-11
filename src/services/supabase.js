@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Note: Since we're using FastAPI, not Supabase, we'll use fetch instead
-const API_URL = process.env.REACT_APP_API_URL || "http://164.90.136.110:8000";
+const API_URL = process.env.REACT_APP_API_URL || "http://164.90.136.110:8002";
 
 if (!API_URL) {
     console.error("Missing API URL!");
