@@ -1,4 +1,5 @@
-// articleService.js
+const API_BASE_URL = "http://164.90.136.110:8002";
+
 export async function getArticles({
     limit = 10,
     offset = 0,
@@ -7,172 +8,136 @@ export async function getArticles({
     direction = "desc",
 } = {}) {
     try {
-        const url = new URL('http://164.90.136.110:8002/articles'); // Endpoint FastAPI
-        const params = new URLSearchParams({
-            limit: limit,
-            offset: offset,
-            category: category || '',
-            sortBy: sortBy,
-            direction: direction
-        });
+        const url = new URL(`${API_BASE_URL}/articles`);
+        const params = {
+            limit,
+            offset,
+            sortBy,
+            direction
+        };
+        
+        if (category) params.category = category;
 
-        url.search = params.toString();
+        url.search = new URLSearchParams(params).toString();
 
         const response = await fetch(url);
-        const data = await response.json();
-
-        if (response.ok) {
-            return {
-                data: data.data, // Lấy dữ liệu bài viết từ response
-                hasNextPage: offset + limit < data.total,
-                total: data.total
-            };
-        } else {
-            console.error('Error fetching articles:', data);
-            throw new Error("Failed to fetch articles");
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        
+        return {
+            data: data.data,
+            hasNextPage: data.hasNextPage,
+            total: data.total
+        };
     } catch (error) {
         console.error("Error fetching articles:", error);
-        throw new Error("Failed to fetch articles");
+        throw error;
     }
 }
 
 export async function getArticleById(id) {
     try {
-        const response = await fetch(`http://164.90.136.110:8002/articles/${id}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.data; // Lấy dữ liệu bài viết
-        } else {
-            console.error("Error fetching article:", data);
-            throw new Error("Failed to fetch article");
+        const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error fetching article:", error);
-        throw new Error("Failed to fetch article");
+        throw error;
     }
 }
 
 export async function getRelatedArticles({ id, category, limit = 3 }) {
     try {
-        const url = new URL('http://164.90.136.110:8002/articles/related'); // Endpoint FastAPI
-        const params = new URLSearchParams({
-            id: id,
-            category: category,
-            limit: limit
-        });
-
-        url.search = params.toString();
+        const url = new URL(`${API_BASE_URL}/articles/related`);
+        url.search = new URLSearchParams({ id, category, limit }).toString();
 
         const response = await fetch(url);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.data; // Lấy dữ liệu bài viết liên quan
-        } else {
-            console.error("Error fetching related articles:", data);
-            throw new Error("Failed to fetch related articles");
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error fetching related articles:", error);
-        throw new Error("Failed to fetch related articles");
+        throw error;
     }
 }
 
 export async function getFeaturedArticles(limit = 5) {
     try {
-        const response = await fetch(`http://164.90.136.110:8002/articles/featured?limit=${limit}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.data; // Lấy dữ liệu bài viết nổi bật
-        } else {
-            console.error("Error fetching featured articles:", data);
-            throw new Error("Failed to fetch featured articles");
+        const response = await fetch(`${API_BASE_URL}/articles/featured?limit=${limit}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error fetching featured articles:", error);
-        throw new Error("Failed to fetch featured articles");
+        throw error;
     }
 }
 
 export async function getTrendingArticles(limit = 4) {
     try {
-        const response = await fetch(`http://164.90.136.110:8002/articles/trending?limit=${limit}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.data; // Lấy dữ liệu bài viết xu hướng
-        } else {
-            console.error("Error fetching trending articles:", data);
-            throw new Error("Failed to fetch trending articles");
+        const response = await fetch(`${API_BASE_URL}/articles/trending?limit=${limit}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error fetching trending articles:", error);
-        throw new Error("Failed to fetch trending articles");
+        throw error;
     }
 }
 
 export async function getCategoryCounts() {
     try {
-        const response = await fetch('http://164.90.136.110:8002/articles/categories');
-        const data = await response.json();
-
-        if (response.ok) {
-            const counts = data.reduce((acc, item) => {
-                acc[item.type_article] = (acc[item.type_article] || 0) + 1;
-                return acc;
-            }, {});
-
-            return Object.entries(counts).map(([name, count]) => ({ name, count }));
-        } else {
-            console.error("Error fetching category counts:", data);
-            throw new Error("Failed to fetch category counts");
+        const response = await fetch(`${API_BASE_URL}/articles/categories`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error fetching category counts:", error);
-        throw new Error("Failed to fetch category counts");
+        throw error;
     }
 }
 
 export async function searchArticles(query) {
     if (!query) return [];
-
+    
     try {
-        const response = await fetch(`http://164.90.136.110:8002/articles/search?query=${query}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.data; // Lấy dữ liệu bài viết tìm kiếm
-        } else {
-            console.error("Error searching articles:", data);
-            throw new Error("Failed to search articles");
+        const response = await fetch(`${API_BASE_URL}/articles/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data.data;
     } catch (error) {
         console.error("Error searching articles:", error);
-        throw new Error("Failed to search articles");
+        throw error;
     }
 }
 
 export async function incrementArticleViews(id) {
-    const currentDate = new Date().toISOString().split("T")[0];
-
     try {
-        const response = await fetch(`http://164.90.136.110:8002/articles/${id}/increment-views`, {
+        const response = await fetch(`${API_BASE_URL}/articles/${id}/increment-views`, {
             method: 'POST'
         });
-        const data = await response.json();
-
-        if (response.ok) {
-            return { success: true, total_view: data.total_view, daily_view: data.daily_view };
-        } else {
-            console.error("Error updating view counts:", data);
-            throw new Error("Failed to increment view counts");
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return await response.json();
     } catch (error) {
         console.error("Error incrementing article views:", error);
-        throw new Error("Failed to increment views");
+        throw error;
     }
 }
 
